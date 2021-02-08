@@ -1,6 +1,5 @@
-document.addEventListener('DOMContentLoaded', function (event) {
-    document.getElementById("btn").addEventListener("click", prepareInfographic)
-    document.getElementById("return").addEventListener("click", returnForm)
+
+function prepareInfographic() {
 
     // Create Dino Constructor
     function dino(species, weight, height, diet, where, when, fact) {
@@ -13,90 +12,6 @@ document.addEventListener('DOMContentLoaded', function (event) {
         this.fact = fact
     }
 
-    // Create Dino Objects
-    Triceratops = new dino(
-        "Triceratops",
-        13000,
-        114,
-        "herbavor",
-        "North America",
-        "Late Cretaceous",
-        "First discovered in 1889 by Othniel Charles Marsh"
-    )
-
-    Tyrannosaurus = new dino(
-        "Tyrannosaurus Rex",
-        11905,
-        144,
-        "carnivor",
-        "North America",
-        "Late Cretaceous",
-        "The largest known skull measures in at 5 feet long."
-    )
-
-    Anklyosaurus = new dino(
-
-        "Anklyosaurus",
-        10500,
-        55,
-        "herbavor",
-        "North America",
-        "Late Cretaceous",
-        "Anklyosaurus survived for approximately 135 million years."
-    )
-
-    Brachiosaurus = new dino(
-        "Brachiosaurus",
-        70000,
-        "372",
-        "herbavor",
-        "North America",
-        "Late Jurasic",
-        "An asteroid was named 9954 Brachiosaurus in 1991."
-    )
-
-    Stegosaurus = new dino(
-        "Stegosaurus",
-        11600,
-        79,
-        "herbavor",
-        "North America, Europe, Asia",
-        "Late Jurasic to Early Cretaceous",
-        "The Stegosaurus had between 17 and 22 seperate places and flat spines."
-    )
-
-
-    Elasmosaurus = new dino(
-        "Elasmosaurus",
-        16000,
-        59,
-        "carnivor",
-        "North America",
-        "Late Cretaceous",
-        "Elasmosaurus was a marine reptile first discovered in Kansas."
-    )
-
-    Pteranodon = new dino(
-        "Pteranodon",
-        44,
-        20,
-        "carnivor",
-        "North America",
-        "Late Cretaceous",
-        "Actually a flying reptile, the Pteranodon is not a dinosaur."
-    )
-
-    Pigeon = new dino(
-        "Pigeon",
-        0.5,
-        9,
-        "herbavor",
-        "World Wide",
-        "Holocene",
-        "All birds are living dinosaurs."
-    )
-
-    dinos = [Triceratops, Tyrannosaurus, Anklyosaurus, Brachiosaurus, Stegosaurus, Elasmosaurus, Pteranodon]
 
     // Create Human Object
     function human(name, height, weight, diet) {
@@ -105,95 +20,204 @@ document.addEventListener('DOMContentLoaded', function (event) {
         this.weight = weight;
         this.diet = diet
     }
+
+
+    // Create Dino Objects
+    const dinos_array = Dinos.map(function (d) {
+        return new dino(d.species, d.weight, d.height, d.diet, d.where, d.when, d.fact)
+    });
+
+    // Create Human Object
+    var hu = new human()
+
     // Use IIFE to get human data from form
-    // human_data = (function () {
-    //     var name = document.getElementById("name").value
-    //     var feet = document.getElementById("feet").value
-    //     var weight = document.getElementById("weight").value
-    //     var diet = document.getElementById("diet").value
-    //     hu = new human(name, feet, weight, diet)
-
-    // })()
-
-
-    // Create Dino Compare Method 1
-    // NOTE: Weight in JSON file is in lbs, height in inches. 
-
-
-    // Create Dino Compare Method 2
-    // NOTE: Weight in JSON file is in lbs, height in inches.
-
-
-    // Create Dino Compare Method 3
-    // NOTE: Weight in JSON file is in lbs, height in inches.
+    human_data = (function () {
+        hu.name = document.getElementById("name").value.trim()
+        hu.feet = document.getElementById("feet").value.trim()
+        hu.weight = document.getElementById("weight").value.trim()
+        hu.height = document.getElementById("feet").value.trim()
+        hu.diet = document.getElementById("diet").value.trim()
+    })()
 
 
     // Generate Tiles for each Dino in Array
-    function generateTiles(creature) {
-        if (creature instanceof dino) {
-            Tile = '<h3>' + creature.species + '</h3><img src="images/' + creature.species + '.png" alt=""><p>' + creature.fact + '</p>'
-        }
+    function generateTiles() {
+        counter = 0
 
-        if (creature instanceof human) {
-            Tile = '<h3>' + creature.name + '</h3><img src="images/human.png" alt="">'
-
-        }
-        return Tile
+        dinos_array.forEach(function (d) {
+            addTiles(d)
+            if (counter == 3) {
+                addTiles(hu)
+            }
+            counter++;
+        })
     }
 
     // Add tiles to DOM
-    function addTiles() {
+    function addTiles(creature) {
 
-        for (i = 0; i < 9; i++) {
-
-            var tile = document.createElement("div");
-            tile.classList.add("grid-item")
-
-            if (i != 4) {
-                creature = dinos[i]
-            } else {
-                creature = (function () {
-                    var name = document.getElementById("name").value
-                    var feet = document.getElementById("feet").value
-                    var weight = document.getElementById("weight").value
-                    var diet = document.getElementById("diet").value
-
-                    hu = new human(name, feet, weight, diet)
-                    return hu
-
-                })()
-            }
-            tile.innerHTML = generateTiles(creature)
-            document.getElementsByTagName("main")[0].appendChild(tile)
+        fact = random_fact.call(hu, creature)
+        var tile = document.createElement("div");
+        tile.classList.add("grid-item")
+        if (creature instanceof dino) {
+            tile.innerHTML = '<h3>' + creature.species + '</h3><img src="images/' + creature.species + '.png" alt=""><p>' + fact + '</p>'
         }
 
+        if (creature instanceof human) {
+
+            tile.innerHTML = '<h3>' + creature.name + '</h3><img src="images/human.png" alt="">'
+        }
+        document.getElementsByTagName("main")[0].appendChild(tile)
     }
+
+
 
     // Remove form from screen
     function removeForm() {
         document.getElementById("dino-compare").style.display = "none"
         document.getElementById("return").style.display = "block"
-
     }
 
-    function returnForm() {
-        document.getElementById("dino-compare").style.display = "block"
-        document.getElementById("return").style.display = "none"
-        document.getElementsByTagName("main")[0].innerHTML = ""
+    if (!hu.name) {
+        alert("You should write your name!")
+        return
     }
-    // On button click, prepare and display infographic
-    function prepareInfographic() {
-        var name = document.getElementById("name").value
+    if (!hu.height) {
+        alert("You should write your height!")
+        return
+    }
 
-        if (name) {
-            removeForm()
-            addTiles()
-        } else {
-            alert("You should write your name!")
+    if (!hu.weight) {
+        alert("You should write your weight!")
+        return
+    }
+
+    if (!hu.diet) {
+        alert("You should write your diet!")
+        return
+    }
+    generateTiles()
+    removeForm()
+
+}
+
+
+function getFact() {
+
+    let all_chosens = []
+
+    return function (creature) {
+        // if pigeon ==> return only the fact
+        if (creature.species == "Pigeon") return creature.fact
+
+        // If w ran out of numbers => repeat the game
+        if (all_chosens.length == 9) {
+            all_chosens = []
         }
+
+        // Get a random number that wasn't chosen before
+        rand = Math.floor(Math.random() * 9);
+        chosen = all_chosens.includes(rand)
+
+        while (chosen) {
+            rand = Math.floor(Math.random() * 9);
+            chosen = all_chosens.includes(rand)
+        }
+        all_chosens.push(rand)
+
+
+        switch (rand) {
+            case 0: {
+                return creature.species + " was " + creature.weight + " lbs weight!"
+            }
+            case 1: {
+                return creature.species + " was " + creature.height + " inches long!"
+            }
+            case 2: {
+                return creature.species + " is a " + creature.diet + "!"
+            }
+            case 3: {
+                return creature.species + " lived in " + creature.where + "!"
+            }
+            case 4: {
+                return creature.species + " lived in " + creature.when + "!"
+            }
+            case 5: {
+                return creature.fact
+            }
+            case 6: {
+                return compareWeight(this, creature)
+            }
+
+            case 7: {
+                return compareHeight(this, creature)
+            }
+            case 8: {
+                return compareDiet(this, creature)
+            }
+
+        }
+        return 'no match'
+
 
     }
 }
 
-)
+let random_fact = getFact();
 
+
+
+
+
+// On button click, prepare and display infographic
+document.getElementById("btn").addEventListener("click", prepareInfographic)
+document.getElementById("return").addEventListener("click", function () {
+    document.getElementById("dino-compare").style.display = "block"
+    document.getElementById("return").style.display = "none"
+    document.getElementsByTagName("main")[0].innerHTML = ""
+})
+
+
+
+// Create Dino Compare Method 1
+// NOTE: Weight in JSON file is in lbs, height in inches. 
+
+function compareWeight(hu, dino) {
+    huWeight = parseInt(hu.weight)
+    dinoWeight = parseInt(dino.weight)
+    times = Math.round(dinoWeight / huWeight)
+    if (times == 1) {
+        return 'You and ' + dino.species + ' are on the same weight!'
+    } else {
+        return dino.species + " is " + dinoWeight / huWeight + " times your weight!"
+    }
+}
+
+
+// Create Dino Compare Method 2
+// NOTE: Weight in JSON file is in lbs, height in inches.
+function compareHeight(hu, dino) {
+    huHeight = parseInt(hu.height)
+    dinoHeight = parseInt(dino.height)
+
+    times = Math.round(dinoHeight / huHeight)
+    if (times == 1) {
+        return 'You and ' + dino.species + ' are on the same height!'
+    } else {
+        return dino.species + " is " + dinoHeight / huHeight + " times your height!"
+    }
+}
+
+//parseInt()
+// Create Dino Compare Method 3
+// NOTE: Weight in JSON file is in lbs, height in inches.
+
+function compareDiet(hu, dino) {
+    if (hu.diet.toLowerCase() == dino.diet.toLowerCase()) {
+        return dino.species + " is " + dino.diet + " like you!"
+    } else {
+        return "Unlike you, " + dino.species + " is " + dino.diet
+    }
+
+
+}
